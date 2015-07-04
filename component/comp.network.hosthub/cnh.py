@@ -41,6 +41,26 @@ class cnh_handle(httpserver.handle):
                 device_info = 'OK'
             rtn['data'] = device_port
             rtn['info'] = device_info
+
+            device_storage_path = self.storage_path + '/storage/' + device_guid
+            try:
+                os.makedirs(device_storage_path)
+            except:
+                pass
+            
+            if os.path.isdir(device_storage_path):
+                rtn['storage'] = device_storage_path
+            
+            device_log_path = self.log_path + '/'
+
+            try:
+                os.makedirs(device_log_path)
+            except:
+                pass
+            
+            if os.path.isdir(device_log_path):
+                rtn['log_file'] = device_log_path + '/' + device_guid + '.log'            
+            
         return self.wrap_data(rtn)
 
 httpserver.run(cnh_handle,HIS_HOSTHUB_ROOT_PORT,True)

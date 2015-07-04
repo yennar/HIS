@@ -1,4 +1,4 @@
-import sio.swave as wave
+
 import snetwork.httpclient as httpclient
 import snetwork.httputils as httputils
 import os
@@ -6,6 +6,7 @@ import json
 import argparse
 import time
 from log.log import *
+import urllib
 
 this_path = os.path.dirname(os.path.realpath(__file__))
 warning_file = this_path + '/share/warning.wav'
@@ -14,12 +15,16 @@ parser = argparse.ArgumentParser(prog='HTTP_SERVER')
 parser.add_argument('-t', '--threadhold',default='40',type=int)
 result = parser.parse_args()
 
-temperature_device = httputils.find_lan_device_by_guid('b318fd7f-5182-4662-8691-a68fbfbaf182')
+temperature_device = httputils.find_lan_device('b318fd7f-5182-4662-8691-a68fbfbaf182')
 if temperature_device is None:
     print_error("Cannot find temperature_device")
     exit(1)
 
-
+voice_device = httputils.find_lan_device('79064f23-57cc-43ca-8fcc-dee7f886fb6e')
+if voice_device is None:
+    print_error("Cannot find voice_device")
+    exit(1)
+    
 speed_low = 2
 speed_low_i = 60
 speed_high_c = 20
@@ -54,7 +59,8 @@ while True:
         voice_flag = 0
     
     if voice_flag:
-        wave.play_wave(warning_file)
+        voice_string = "Warning! Temperature over threadhold. %d degrees Celsius" % temperature_now
+        httpclient.get('http://%s:%d/say?content=%s' % (voice_device.address,voice_device.port,urllib.quote(voice_string)),timeout=20)
         time.sleep(5)
     time.sleep(5)
     temperature_db[temperature_now] = temperature_ts

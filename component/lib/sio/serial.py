@@ -10,7 +10,7 @@ class HisSerial(QSerialPort):
         name_matrix = {}
         name_id = 0
         for sys_port in QSerialPortInfo.availablePorts():
-            print_info("Port %s,%s,%s,%s" % (sys_port.portName(),sys_port.manufacturer(),sys_port.description(),sys_port.systemLocation()))
+            print_info("Port %s,%s" % (sys_port.portName(),sys_port.systemLocation()))
             name_matrix[name_id] = {
                 0:sys_port.portName(),
                 1:sys_port.manufacturer(),
